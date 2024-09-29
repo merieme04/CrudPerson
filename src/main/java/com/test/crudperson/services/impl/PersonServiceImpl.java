@@ -5,6 +5,8 @@ import com.test.crudperson.config.exception.ResourceNotFoundException;
 import com.test.crudperson.repositories.PersonRepository;
 import com.test.crudperson.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,14 +60,14 @@ public class PersonServiceImpl implements PersonService {
 
     // Récupérer toutes les personnes
     @Override
-    public List<Person> getAllPersons() {
-        return personRepository.findAll();
+    public Page<Person> getAllPersons(Pageable pageable) {
+        return personRepository.findAll(pageable);
     }
 
-    // Méthode pour récupérer une liste de personnes par nom
+    // Méthode pour récupérer une liste de personnes par nom et prenom
     @Override
-    public List<Person> getPersonsByNom(String nom) {
-        return personRepository.findByNom(nom);
+    public Page<Person> searchPersons(String keyword, Pageable pageable) {
+        return personRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(keyword, keyword, pageable);
     }
 
 }

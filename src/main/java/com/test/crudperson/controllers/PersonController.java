@@ -4,6 +4,9 @@ import com.test.crudperson.entities.Person;
 import com.test.crudperson.config.exception.ResourceNotFoundException;
 import com.test.crudperson.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +48,8 @@ public class PersonController {
 
     // Récupérer toutes les personnes
     @GetMapping
-    public ResponseEntity<List<Person>> getAllPersons() {
-        List<Person> persons = personService.getAllPersons();
+    public ResponseEntity<Page<Person>> getAllPersons(@PageableDefault(size = 7) Pageable pageable) {
+        Page<Person> persons = personService.getAllPersons(pageable);
         return ResponseEntity.ok(persons);
     }
 
@@ -62,13 +65,12 @@ public class PersonController {
         }
     }
 
-    // Récupérer les personnes by name
-    @GetMapping("/by-nom/{nom}")
-    public ResponseEntity<List<Person>> getPersonsByNom(@PathVariable String nom) {
-        List<Person> persons = personService.getPersonsByNom(nom);
-        if (persons.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+    // Récupérer les personnes par nom ou prénom
+    @GetMapping("/search")
+    public ResponseEntity<Page<Person>> searchPersons(@RequestParam String keyword,
+                                                      @PageableDefault(size = 5) Pageable pageable) {
+        Page<Person> persons = personService.searchPersons(keyword, pageable);
         return ResponseEntity.ok(persons);
     }
+
 }
